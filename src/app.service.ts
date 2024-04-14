@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { parse } from 'node-html-parser';
 import { Film } from './films/film.entity';
+import { FilmService } from './films/film.service';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
-  }
+  constructor (
+    private readonly filmService: FilmService,
+  ) {}
 
   async getAllFilms(): Promise<Film[]> {
     const filmArray: Film[] = [];

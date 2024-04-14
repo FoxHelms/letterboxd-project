@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { DataSource } from 'typeorm';
+import { FilmModule } from './films/film.module';
 
 @Module({
   imports: [
@@ -15,8 +17,11 @@ import { ConfigService } from './config/config.service';
       },
       inject: [ConfigService],
     }),
+    FilmModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}
