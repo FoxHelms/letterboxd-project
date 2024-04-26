@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { DataSource } from 'typeorm';
-import { FilmModule } from './films/film.module';
+import { FilmModule } from './film/film.module';
 
 @Module({
   imports: [
