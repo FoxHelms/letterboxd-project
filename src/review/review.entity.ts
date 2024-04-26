@@ -13,7 +13,7 @@ export class Review {
   @Column({ nullable: true })
   star_rating: number;
 
-  @Column({ nullable: false, default: false })
+  @Column({ nullable: false})
   liked: boolean;
 
   @ManyToOne(() => User, user => user.reviews)

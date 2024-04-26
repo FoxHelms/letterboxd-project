@@ -4,7 +4,7 @@ export class CreateUserAndReview1714171865599 implements MigrationInterface {
     name = 'CreateUserAndReview1714171865599'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "review" ("updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "star_rating" integer, "liked" boolean NOT NULL DEFAULT false, "userId" uuid, "filmId" uuid, CONSTRAINT "PK_2e4299a343a81574217255c00ca" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "review" ("updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "star_rating" integer, "liked" boolean NOT NULL, "userId" uuid, "filmId" uuid, CONSTRAINT "PK_2e4299a343a81574217255c00ca" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "username" character varying NOT NULL, "letterboxdId" character varying NOT NULL, CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
         await queryRunner.query(`ALTER TABLE "film" DROP COLUMN "created"`);
         await queryRunner.query(`ALTER TABLE "film" DROP COLUMN "updated"`);
