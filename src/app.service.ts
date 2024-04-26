@@ -28,11 +28,12 @@ export class AppService {
       const filmId = rawFilmString.match(
         new RegExp('data-film-id="' + '(.*)' + '" data-film-slug'),
       );
-      filmArray.push({
-        name: filmName.at(1),
-        letterboxdId: filmId.at(1),
-        id: '',
-      });
+
+      const newFilm = new Film();
+      newFilm.name = filmName.at(1);
+      newFilm.letterboxdId = filmId.at(1);
+
+      filmArray.push(newFilm);
     }
     return filmArray;
   }
