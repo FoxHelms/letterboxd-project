@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { parse } from 'node-html-parser';
 import { Film } from './films/film.entity';
 import { FilmService } from './films/film.service';
+import { LetterboxdFilm, LetterboxdFilmRequest } from './films/film.types';
 
 @Injectable()
 export class AppService {
-  constructor (
-    private readonly filmService: FilmService,
-  ) {}
+  constructor(private readonly filmService: FilmService) {}
 
   async getAllFilms(): Promise<Film[]> {
     const filmArray: Film[] = [];
@@ -39,5 +38,42 @@ export class AppService {
     }
 
     return filmArray;
+  }
+
+  async getFilmObject(
+    letterboxdRequest: LetterboxdFilmRequest,
+  ): Promise<LetterboxdFilm> {
+    const resp = await fetch(
+      `https://letterboxd.com/film/${letterboxdRequest.title}-${letterboxdRequest.year}`,
+    );
+    const respBody = await resp.text();
+    const parsedPage = parse(respBody);
+    const allCastLinks = parsedPage.querySelectorAll('a[href^="/actor/"]');
+    const allDirectorLinks = parsedPage.querySelectorAll(
+      'a[href^="/director/"]',
+    );
+    const allProducerLinks = parsedPage.querySelectorAll(
+      'a[href^="/producer/"]',
+    );
+    const filmCountry = parsedPage.querySelector(
+      'a[href^="/films/country/"]',
+    ).text;
+    const filmLang = parsedPage.querySelector(
+      'a[href^="/films/language/"]',
+    ).text;
+    const filmGenre = parsedPage.querySelector('a[href^="/films/genre/"]').text;
+    const cast = allCastLinks.map((node) => node.text);
+    const director = allDirectorLinks.map((node) => node.text);
+    const producer = allProducerLinks.map((node) => node.text);
+    return {
+      title: letterboxdRequest.title,
+      year: letterboxdRequest.year,
+      directors: director,
+      producers: producer,
+      language: filmLang,
+      country: filmCountry,
+      genre: filmGenre,
+      actors: cast,
+    };
   }
 }
