@@ -5,9 +5,7 @@ import { FilmService } from './films/film.service';
 
 @Injectable()
 export class AppService {
-  constructor (
-    private readonly filmService: FilmService,
-  ) {}
+  constructor(private readonly filmService: FilmService) {}
 
   async getAllFilms(): Promise<Film[]> {
     const resp = await fetch(

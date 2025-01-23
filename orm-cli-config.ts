@@ -7,9 +7,11 @@ import * as dotenvExpand from 'dotenv-expand';
 const env = dotenv.config({ path: path.resolve(__dirname, '.', '.env.local') });
 dotenvExpand.expand(env);
 
-const ssl_config = process.env.DATABASE_USE_SSL
+const ssl_config = (process.env.DATABASE_USE_SSL == 'true')
   ? { rejectUnauthorized: false }
   : false;
+
+console.log(ssl_config);
 
 export default new DataSource({
   type: 'postgres',
