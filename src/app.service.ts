@@ -7,7 +7,7 @@ import { FilmService } from './films/film.service';
 export class AppService {
   constructor(private readonly filmService: FilmService) {}
 
-  async getAllFilms(): Promise<Film[]> {
+  async scrapeAllFilms(save: boolean = false): Promise<Film[]> {
     const resp = await fetch(
       'https://letterboxd.com/hershwin/list/all-the-movies/',
     );
@@ -33,6 +33,20 @@ export class AppService {
 
       filmArray.push(newFilm);
     }
+
+    if (save) {
+      const filmPromises = new Array<Promise<Film>>();
+      for (const film of filmArray) {
+        filmPromises.push(this.filmService.saveFilm(film.name, film.letterboxdId));
+      }
+      const res = await Promise.all(filmPromises);
+      console.log(res);
+    }
+
     return filmArray;
+  }
+
+  getAllFilms() {
+    return this.filmService.getAllFilms()
   }
 }

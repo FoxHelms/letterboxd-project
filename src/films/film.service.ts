@@ -16,4 +16,8 @@ export class FilmService {
     film.letterboxdId = letterboxdId;
     return this.filmRepository.save(film);
   }
+
+  getAllFilms() {
+    return this.filmRepository.find();
+  }
 }
