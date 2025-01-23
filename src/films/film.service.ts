@@ -139,6 +139,6 @@ export class FilmService {
     film.fullSummary = fullSummary;
 
     console.log('new film obj', film);
-    return film;
+    return await this.filmRepository.save(film);
   }
 }
