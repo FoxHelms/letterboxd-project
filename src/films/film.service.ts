@@ -5,15 +5,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class FilmService {
-    constructor(
-        @InjectRepository(Film)
-        private readonly filmRepository: Repository<Film>
-    ) {}
+  constructor(
+    @InjectRepository(Film)
+    private readonly filmRepository: Repository<Film>,
+  ) {}
 
-    saveFilm(name: string, letterboxdId: string): Promise<Film> {
-        const film = new Film();
-        film.name = name;
-        film.letterboxdId = letterboxdId;
-        return this.filmRepository.save(film);
-    }
+  saveFilm(name: string, letterboxdId: string): Promise<Film> {
+    const film = new Film();
+    film.name = name;
+    film.letterboxdId = letterboxdId;
+    return this.filmRepository.save(film);
+  }
+
+  getAllFilms() {
+    return this.filmRepository.find();
+  }
 }

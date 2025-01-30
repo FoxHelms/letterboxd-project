@@ -5,11 +5,13 @@ import { FilmService } from './films/film.service';
 
 @Injectable()
 export class AppService {
-  constructor (
-    private readonly filmService: FilmService,
-  ) {}
+  constructor(private readonly filmService: FilmService) {}
 
-  async getAllFilms(): Promise<Film[]> {
+  async scrapeAllFilms(save: boolean = false): Promise<Film[]> {
+    const resp = await fetch(
+      'https://letterboxd.com/hershwin/list/all-the-movies/',
+    );
+    let i: number;
     const filmArray: Film[] = [];
     for (let j = 1; j <= 349; j++) {
       console.log(`Scraping page ${j}/349`);
@@ -22,22 +24,29 @@ export class AppService {
       const filmsList = parsedPage.querySelectorAll(
         '[class="poster-container numbered-list-item"]',
       );
-      for (i = 0; i < filmsList.length; i++) {
-        const rawFilmString = filmsList.at(i).innerHTML;
-        const filmName = rawFilmString.match(
-          new RegExp('alt="' + '(.*)' + '"> <span class="frame">'),
+
+      const newFilm = new Film();
+      newFilm.name = filmName.at(1);
+      newFilm.letterboxdId = filmId.at(1);
+
+      filmArray.push(newFilm);
+    }
+
+    if (save) {
+      const filmPromises = new Array<Promise<Film>>();
+      for (const film of filmArray) {
+        filmPromises.push(
+          this.filmService.saveFilm(film.name, film.letterboxdId),
         );
-        const filmId = rawFilmString.match(
-          new RegExp('data-film-id="' + '(.*)' + '" data-film-slug'),
-        );
-        filmArray.push({
-          name: filmName.at(1),
-          letterboxdId: filmId.at(1),
-          id: '',
-        });
       }
+      const res = await Promise.all(filmPromises);
+      console.log(res);
     }
 
     return filmArray;
+  }
+
+  getAllFilms() {
+    return this.filmService.getAllFilms();
   }
 }

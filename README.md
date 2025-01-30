@@ -1,3 +1,13 @@
+## Running the project with Docker (Docker Desktop needs to be running)
+```bash
+docker-compose up --build
+```
+
+## Running migrations
+```bash
+docker-compose exec api npm run typeorm:migration:run
+```
+
 ## Installation
 
 ```bash

@@ -42,6 +42,7 @@ export class ConfigService extends _ConfigService<Config, true> {
 
       logging: Boolean(process.env.ENABLE_DB_LOGGING),
     };
+    console.log(config);
 
     return config;
   }
