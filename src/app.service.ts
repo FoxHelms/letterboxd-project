@@ -24,12 +24,22 @@ export class AppService {
       const filmsList = parsedPage.querySelectorAll(
         '[class="poster-container numbered-list-item"]',
       );
+      // console.log('film list item: ', filmsList.at(1));
+      // console.log('film list item inner html: ', filmsList.at(1).innerHTML);
 
+      await filmsList.forEach((film) => {
       const newFilm = new Film();
-      newFilm.name = filmName.at(1);
-      newFilm.letterboxdId = filmId.at(1);
+        newFilm.name = film
+          .getElementsByTagName('div')
+          .at(0)
+          .getAttribute('data-film-slug');
+        newFilm.letterboxdId = film
+          .getElementsByTagName('div')
+          .at(0)
+          .getAttribute('data-film-id');
 
       filmArray.push(newFilm);
+      });
     }
 
     if (save) {
