@@ -27,7 +27,7 @@ export class AppService {
       // console.log('film list item: ', filmsList.at(1));
       // console.log('film list item inner html: ', filmsList.at(1).innerHTML);
 
-      await filmsList.forEach((film) => {
+      filmsList.forEach((film) => {
       const newFilm = new Film();
         newFilm.name = film
           .getElementsByTagName('div')
