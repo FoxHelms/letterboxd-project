@@ -59,4 +59,8 @@ export class AppService {
   getAllFilms() {
     return this.filmService.getAllFilms();
   }
+
+  downloadFilms() {
+    return this.filmService.downloadFilms();
+  }
 }

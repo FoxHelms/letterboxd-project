@@ -11,6 +11,11 @@ export class AppController {
     return await this.appService.scrapeAllFilms(save);
   }
 
+  @Post('films/download')
+  async downloadFilms() {
+    return await this.appService.downloadFilms();
+  }
+
   @Get('films/all')
   async getAllFilms(): Promise<Film[]> {
     return await this.appService.getAllFilms();
