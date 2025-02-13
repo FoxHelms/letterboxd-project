@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Film } from './film/film.entity';
 
@@ -6,7 +6,12 @@ import { Film } from './film/film.entity';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('films')
+  @Post('films/scrape')
+  async scrapeAllFilms(@Query('save') save?: boolean): Promise<Film[]> {
+    return await this.appService.scrapeAllFilms(save);
+  }
+
+  @Get('films/all')
   async getAllFilms(): Promise<Film[]> {
     return await this.appService.getAllFilms();
   }
