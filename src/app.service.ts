@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { parse } from 'node-html-parser';
+import { parse, HTMLElement } from 'node-html-parser';
 import { Film } from './films/film.entity';
 import { FilmService } from './films/film.service';
 
@@ -13,8 +13,10 @@ export class AppService {
     );
     let i: number;
     const filmArray: Film[] = [];
-    for (let j = 1; j <= 349; j++) {
-      console.log(`Scraping page ${j}/349`);
+    const maxPage = this.getMaxPage(parse(await resp.text()));
+
+    for (let j = 1; j <= maxPage; j++) {
+      console.log(`Scraping page ${j}/${maxPage}`);
       const resp = await fetch(
         `https://letterboxd.com/hershwin/list/all-the-movies/page/${j}/`,
       );
@@ -24,12 +26,22 @@ export class AppService {
       const filmsList = parsedPage.querySelectorAll(
         '[class="poster-container numbered-list-item"]',
       );
+      // console.log('film list item: ', filmsList.at(1));
+      // console.log('film list item inner html: ', filmsList.at(1).innerHTML);
 
-      const newFilm = new Film();
-      newFilm.name = filmName.at(1);
-      newFilm.letterboxdId = filmId.at(1);
+      filmsList.forEach((film) => {
+        const newFilm = new Film();
+        newFilm.name = film
+          .getElementsByTagName('div')
+          .at(0)
+          .getAttribute('data-film-slug');
+        newFilm.letterboxdId = film
+          .getElementsByTagName('div')
+          .at(0)
+          .getAttribute('data-film-id');
 
-      filmArray.push(newFilm);
+        filmArray.push(newFilm);
+      });
     }
 
     if (save) {
@@ -44,6 +56,18 @@ export class AppService {
     }
 
     return filmArray;
+  }
+
+  private getMaxPage(parsedHtml: HTMLElement): number {
+    const paginatePages = parsedHtml.querySelectorAll('.paginate-page');
+    if (paginatePages.length === 0) {
+      return 1;
+    }
+
+    const lastPage = paginatePages[paginatePages.length - 1];
+    const pageNumber = lastPage.querySelector('a')?.textContent;
+
+    return pageNumber ? parseInt(pageNumber, 10) : 1;
   }
 
   getAllFilms() {
