@@ -1,4 +1,4 @@
-import { Film } from 'src/film/film.entity';
+import { Film } from 'src/films/film.entity';
 import { User } from 'src/user/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 

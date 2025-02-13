@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Film } from './film/film.entity';
+import { Film } from './films/film.entity';
 
 @Controller()
 export class AppController {

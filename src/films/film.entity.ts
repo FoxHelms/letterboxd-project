@@ -1,11 +1,13 @@
 import { Review } from 'src/review/review.entity';
+import { User } from 'src/user/user.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  ManyToMany
 } from 'typeorm';
 
 @Entity()
@@ -27,4 +29,7 @@ export class Film {
 
   @OneToMany(() => Review, review => review.film)
   reviews: Review[];
+
+  @ManyToMany(() => User, user => user.films)
+  users: User[]
 }

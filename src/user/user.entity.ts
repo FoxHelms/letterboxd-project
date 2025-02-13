@@ -1,5 +1,6 @@
 import { Review } from 'src/review/review.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Film } from 'src/films/film.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany } from 'typeorm';
 
 @Entity()
 export class User {
@@ -20,4 +21,7 @@ export class User {
 
   @OneToMany(() => Review, review => review.user)
   reviews: Promise<Review[]>;
+
+  @ManyToMany(() => Film, film => film.users)
+  films: Promise<Film[]>
 }
