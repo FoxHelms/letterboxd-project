@@ -6,6 +6,7 @@ import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { DataSource } from 'typeorm';
 import { FilmModule } from './films/film.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FilmModule } from './films/film.module';
       inject: [ConfigService],
     }),
     FilmModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

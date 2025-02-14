@@ -1,4 +1,4 @@
-import { Review } from 'src/review/review.entity';
+import { Film } from 'src/films/film.entity';
 import { User } from 'src/user/user.entity';
 import {
   Entity,
@@ -6,12 +6,11 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
-  ManyToMany,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
-export class Film {
+export class Review {
   @CreateDateColumn()
   created: Date;
 
@@ -21,15 +20,15 @@ export class Film {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false })
-  name: string;
+  @Column({ nullable: true })
+  star_rating: number;
 
   @Column({ nullable: false })
-  letterboxdId: string;
+  liked: boolean;
 
-  @OneToMany(() => Review, (review) => review.film)
-  reviews: Review[];
+  @ManyToOne(() => User, (user) => user.reviews)
+  user: User;
 
-  @ManyToMany(() => User, (user) => user.films)
-  users: User[];
+  @ManyToOne(() => Film, (film) => film.reviews)
+  film: Film;
 }
