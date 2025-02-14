@@ -27,6 +27,15 @@ export class Film {
   @Column({ nullable: false })
   letterboxdId: string;
 
+  @Column({ nullable: false })
+  releaseYear: string;
+
+  @Column({ nullable: false })
+  tagline: string;
+
+  @Column({ nullable: false })
+  fullSummary: string;
+
   @OneToMany(() => Review, (review) => review.film)
   reviews: Review[];
 

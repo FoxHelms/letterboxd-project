@@ -15,6 +15,15 @@ export class AppController {
     return await this.appService.scrapeAllFilms(save);
   }
 
+  // TODO - not sure what to do with letterboxdId here
+  @Post('films/scrape/:name')
+  async scrapeFilmData(
+    @Param('name') name: string,
+    @Param('id') id: string,
+  ): Promise<Film> {
+    return await this.appService.scrapeFilmData(name, id);
+  }
+
   @Get('films/all')
   async getAllFilms(): Promise<Film[]> {
     return await this.appService.getAllFilms();
