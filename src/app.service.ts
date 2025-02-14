@@ -11,7 +11,6 @@ export class AppService {
     const resp = await fetch(
       'https://letterboxd.com/hershwin/list/all-the-movies/',
     );
-    let i: number;
     const filmArray: Film[] = [];
     const maxPage = this.getMaxPage(parse(await resp.text()));
 
@@ -20,7 +19,6 @@ export class AppService {
       const resp = await fetch(
         `https://letterboxd.com/hershwin/list/all-the-movies/page/${j}/`,
       );
-      let i: number;
       const respBody = await resp.text();
       const parsedPage = parse(respBody);
       const filmsList = parsedPage.querySelectorAll(
