@@ -56,6 +56,38 @@ export class AppService {
     return filmArray;
   }
 
+  // TODO - not sure what to do with letterboxdId here
+  async scrapeFilmData(filmName: string, letterboxdId: string) {
+    const film = new Film();
+    const resp = await fetch(`https://letterboxd.com/film/${filmName}/`);
+    const respBody = await resp.text();
+    const parsedPage = parse(respBody);
+    const filmWrapper = parsedPage.getElementById('film-page-wrapper');
+    const reviewElement = filmWrapper.querySelector(
+      '[class="review body-text -prose -hero prettify"]',
+    );
+
+    const filmYear = filmWrapper.querySelector(
+      '[class="releaseyear"]',
+    ).textContent;
+    const tagline = reviewElement.querySelector('[class="tagline"]').textContent
+      ? reviewElement.querySelector('[class="tagline"]').textContent
+      : filmWrapper.querySelector('[class="tagline"]').textContent;
+
+    const fullSummary = reviewElement
+      .getElementsByTagName('p')
+      .at(0).textContent;
+
+    film.name = filmName;
+    film.letterboxdId = letterboxdId;
+    film.releaseYear = filmYear;
+    film.tagline = tagline;
+    film.fullSummary = fullSummary;
+
+    console.log('new film obj', film);
+    return film;
+  }
+
   private getMaxPage(parsedHtml: HTMLElement): number {
     const paginatePages = parsedHtml.querySelectorAll('.paginate-page');
     if (paginatePages.length === 0) {
