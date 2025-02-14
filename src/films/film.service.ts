@@ -17,6 +17,10 @@ export class FilmService {
     return this.filmRepository.save(film);
   }
 
+  getFilmByLetterboxdId(letterboxdId: string): Promise<Film> {
+    return this.filmRepository.findOne({ where: { letterboxdId } });
+  }
+
   getAllFilms() {
     return this.filmRepository.find();
   }

@@ -4,8 +4,15 @@ docker-compose up --build
 ```
 
 ## Running migrations
+While the server is running on docker, in a separate terminal:
 ```bash
-docker-compose exec api npm run typeorm:migration:run
+npm run docker:migration:generate
+```
+
+## Creating migrations
+While the server is running on docker, in a separate terminal:
+```bash
+npm run docker:migration:generate ./migrations/<MIGRATION_NAME>
 ```
 
 ## Installation

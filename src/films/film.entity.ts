@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  ManyToMany
+  ManyToMany,
 } from 'typeorm';
 
 @Entity()
@@ -27,9 +27,9 @@ export class Film {
   @Column({ nullable: false })
   letterboxdId: string;
 
-  @OneToMany(() => Review, review => review.film)
+  @OneToMany(() => Review, (review) => review.film)
   reviews: Review[];
 
-  @ManyToMany(() => User, user => user.films)
-  users: User[]
+  @ManyToMany(() => User, (user) => user.films)
+  users: User[];
 }
