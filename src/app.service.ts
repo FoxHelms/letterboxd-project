@@ -70,6 +70,12 @@ export class AppService {
     const filmYear = filmWrapper.querySelector(
       '[class="releaseyear"]',
     ).textContent;
+
+    const runtimeString = filmWrapper.querySelector(
+      '[class="text-link text-footer"]',
+    ).textContent;
+    const runtime = runtimeString.split('mins').at(0);
+
     const tagline = reviewElement.querySelector('[class="tagline"]').textContent
       ? reviewElement.querySelector('[class="tagline"]').textContent
       : filmWrapper.querySelector('[class="tagline"]').textContent;
@@ -81,6 +87,7 @@ export class AppService {
     film.name = filmName;
     film.letterboxdId = letterboxdId;
     film.releaseYear = filmYear;
+    film.runtime = runtime.replace(/[^0-9 ]/g, '');
     film.tagline = tagline;
     film.fullSummary = fullSummary;
 
