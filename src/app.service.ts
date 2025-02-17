@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { parse, HTMLElement } from 'node-html-parser';
 import { Film } from './films/film.entity';
 import { FilmService } from './films/film.service';
-import { writeFile } from 'fs/promises';
 
 @Injectable()
 export class AppService {
