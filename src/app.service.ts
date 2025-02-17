@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { parse, HTMLElement } from 'node-html-parser';
 import { Film } from './films/film.entity';
 import { FilmService } from './films/film.service';
+import { writeFile } from 'fs/promises';
 
 @Injectable()
 export class AppService {
@@ -59,9 +60,33 @@ export class AppService {
   // TODO - not sure what to do with letterboxdId here
   async scrapeFilmData(filmName: string, letterboxdId: string) {
     const film = new Film();
+    const collectedStats = {
+      members: '',
+      fans: '',
+      likes: '',
+      reviews: '',
+      lists: '',
+    };
     const resp = await fetch(`https://letterboxd.com/film/${filmName}/`);
+    const ratingsResp = await fetch(
+      `https://letterboxd.com/film/${filmName}/ratings`,
+    );
     const respBody = await resp.text();
+    const ratingsRespBody = await ratingsResp.text();
     const parsedPage = parse(respBody);
+    const parsedRatings = parse(ratingsRespBody);
+
+    Object.keys(collectedStats).forEach((category) => {
+      const statElement = parsedRatings.querySelector(
+        `[href="/film/${filmName}/${category}/"]`,
+      );
+      const statCount = statElement
+        .getAttribute('title')
+        .replace(/[^0-9 ]/g, '');
+
+      collectedStats[category] = statCount;
+    });
+
     const filmWrapper = parsedPage.getElementById('film-page-wrapper');
     const reviewElement = filmWrapper.querySelector(
       '[class="review body-text -prose -hero prettify"]',
@@ -74,7 +99,7 @@ export class AppService {
     const runtimeString = filmWrapper.querySelector(
       '[class="text-link text-footer"]',
     ).textContent;
-    const runtime = runtimeString.split('mins').at(0);
+    const runtime = runtimeString.replace(/[^0-9]/g, '');
 
     const tagline = reviewElement.querySelector('[class="tagline"]').textContent
       ? reviewElement.querySelector('[class="tagline"]').textContent
@@ -87,7 +112,12 @@ export class AppService {
     film.name = filmName;
     film.letterboxdId = letterboxdId;
     film.releaseYear = filmYear;
-    film.runtime = runtime.replace(/[^0-9 ]/g, '');
+    film.watchedCount = collectedStats['members'];
+    film.fansCount = collectedStats['fans'];
+    film.likesCount = collectedStats['likes'];
+    film.reviewsCount = collectedStats['reviews'];
+    film.listsCount = collectedStats['lists'];
+    film.runtime = runtime;
     film.tagline = tagline;
     film.fullSummary = fullSummary;
 
