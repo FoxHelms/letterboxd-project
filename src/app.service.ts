@@ -81,6 +81,18 @@ export class AppService {
       .split(' ')
       .at(0);
 
+    const genreThemeString = parsedPage
+      .getElementById('tab-genres')
+      .textContent.replace(/[^a-zA-Z ]/g, '');
+
+    const tempGenreStr = genreThemeString.match('Genre(.*) Themes');
+    const tempThemesStr = genreThemeString.match('Themes(.*) Show All');
+
+    const filmGenre = tempGenreStr.at(1).includes(' ')
+      ? tempGenreStr.at(1).substring(1).replaceAll(' ', ',')
+      : tempGenreStr.at(1);
+    const filmThemes = tempThemesStr.at(1);
+
     Object.keys(collectedStats).forEach((category) => {
       const statElement = parsedRatings.querySelector(
         `[href="/film/${filmName}/${category}/"]`,
@@ -118,6 +130,8 @@ export class AppService {
     film.letterboxdId = letterboxdId;
     film.releaseYear = filmYear;
     film.averageRating = averageRating;
+    film.genre = filmGenre;
+    film.themes = filmThemes;
     film.watchedCount = collectedStats['members'];
     film.fansCount = collectedStats['fans'];
     film.likesCount = collectedStats['likes'];

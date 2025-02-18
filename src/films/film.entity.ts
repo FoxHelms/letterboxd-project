@@ -37,6 +37,12 @@ export class Film {
   runtime: string;
 
   @Column({ nullable: false })
+  genre: string;
+
+  @Column({ nullable: false })
+  themes: string;
+
+  @Column({ nullable: false })
   watchedCount: string;
 
   @Column({ nullable: false })
