@@ -87,7 +87,7 @@ export class AppService {
       );
       const statCount = statElement
         .getAttribute('title')
-        .replace(/[^0-9 ]/g, '');
+        .replace(/[^0-9]/g, '');
 
       collectedStats[category] = statCount;
     });
