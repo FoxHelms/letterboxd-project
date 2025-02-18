@@ -31,6 +31,9 @@ export class Film {
   releaseYear: string;
 
   @Column({ nullable: false })
+  averageRating: string;
+
+  @Column({ nullable: false })
   runtime: string;
 
   @Column({ nullable: false })

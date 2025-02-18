@@ -75,6 +75,12 @@ export class AppService {
     const parsedPage = parse(respBody);
     const parsedRatings = parse(ratingsRespBody);
 
+    const averageRating = parsedPage
+      .querySelector('[name="twitter:data2"]')
+      .getAttribute('content')
+      .split(' ')
+      .at(0);
+
     Object.keys(collectedStats).forEach((category) => {
       const statElement = parsedRatings.querySelector(
         `[href="/film/${filmName}/${category}/"]`,
@@ -111,6 +117,7 @@ export class AppService {
     film.name = filmName;
     film.letterboxdId = letterboxdId;
     film.releaseYear = filmYear;
+    film.averageRating = averageRating;
     film.watchedCount = collectedStats['members'];
     film.fansCount = collectedStats['fans'];
     film.likesCount = collectedStats['likes'];
