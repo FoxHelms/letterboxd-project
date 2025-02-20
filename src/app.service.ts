@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { parse, HTMLElement } from 'node-html-parser';
-import { Film } from './films/film.entity';
+import { Film, genre } from './films/film.entity';
 import { FilmService } from './films/film.service';
 
 @Injectable()
@@ -56,9 +56,9 @@ export class AppService {
     return filmArray;
   }
 
-  // TODO - not sure what to do with letterboxdId here
   async scrapeFilmData(filmName: string, letterboxdId: string) {
     const film = new Film();
+    const filmGenres: genre[] = [];
     const collectedStats = {
       members: '',
       fans: '',
@@ -85,12 +85,33 @@ export class AppService {
       .getElementById('tab-genres')
       .textContent.replace(/[^a-zA-Z ]/g, '');
 
-    const tempGenreStr = genreThemeString.match('Genre(.*) Themes');
+    let tempGenreStr = genreThemeString.match('Genre(.*) Themes').at(1);
     const tempThemesStr = genreThemeString.match('Themes(.*) Show All');
 
-    const filmGenre = tempGenreStr.at(1).includes(' ')
-      ? tempGenreStr.at(1).substring(1).replaceAll(' ', ',')
-      : tempGenreStr.at(1);
+    const filmGenresStringArray = [];
+
+    if (tempGenreStr.includes('Science Fiction')) {
+      filmGenresStringArray.push('ScienceFiction');
+      tempGenreStr = tempGenreStr.replace('Science Fiction', '');
+    }
+
+    if (tempGenreStr.includes('TV Movie')) {
+      filmGenresStringArray.push('TVMovie');
+      tempGenreStr = tempGenreStr.replace('TV Movie', '');
+    }
+
+    tempGenreStr.includes(' ')
+      ? filmGenresStringArray.push(...tempGenreStr.substring(1).split(' '))
+      : filmGenresStringArray.push(tempGenreStr);
+
+    filmGenresStringArray.forEach((filmGenresString) => {
+      if (filmGenresString) {
+        Object.values(genre).includes(filmGenresString as genre)
+          ? filmGenres.push(genre[filmGenresString])
+          : filmGenres.push(genre.Unknown);
+      }
+    });
+
     const filmThemes = tempThemesStr.at(1);
 
     Object.keys(collectedStats).forEach((category) => {
@@ -129,15 +150,15 @@ export class AppService {
     film.name = filmName;
     film.letterboxdId = letterboxdId;
     film.releaseYear = filmYear;
-    film.averageRating = averageRating;
-    film.genre = filmGenre;
+    film.averageRating = parseInt(averageRating);
+    film.genre = filmGenres;
     film.themes = filmThemes;
-    film.watchedCount = collectedStats['members'];
-    film.fansCount = collectedStats['fans'];
-    film.likesCount = collectedStats['likes'];
-    film.reviewsCount = collectedStats['reviews'];
-    film.listsCount = collectedStats['lists'];
-    film.runtime = runtime;
+    film.watchedCount = parseInt(collectedStats['members']);
+    film.fansCount = parseInt(collectedStats['fans']);
+    film.likesCount = parseInt(collectedStats['likes']);
+    film.reviewsCount = parseInt(collectedStats['reviews']);
+    film.listsCount = parseInt(collectedStats['lists']);
+    film.runtime = parseInt(runtime);
     film.tagline = tagline;
     film.fullSummary = fullSummary;
 

@@ -10,6 +10,29 @@ import {
   ManyToMany,
 } from 'typeorm';
 
+export enum genre {
+  Action = 'Action',
+  Adventure = 'Adventure',
+  Animation = 'Animation',
+  Comedy = 'Comedy',
+  Crime = 'Crime',
+  Documentary = 'Documentary',
+  Drama = 'Drama',
+  Family = 'Family',
+  Fantasy = 'Fantasy',
+  History = 'History',
+  Horror = 'Horror',
+  Music = 'Music',
+  Mystery = 'Mystery',
+  Romance = 'Romance',
+  ScienceFiction = 'ScienceFiction',
+  Thriller = 'Thriller',
+  TVMovie = 'TVMovie',
+  War = 'War',
+  Western = 'Western',
+  Unknown = 'Unknown',
+}
+
 @Entity()
 export class Film {
   @CreateDateColumn()
@@ -31,31 +54,37 @@ export class Film {
   releaseYear: string;
 
   @Column({ nullable: false })
-  averageRating: string;
+  averageRating: number;
 
   @Column({ nullable: false })
-  runtime: string;
+  runtime: number;
 
-  @Column({ nullable: false })
-  genre: string;
+  @Column({
+    nullable: false,
+    array: true,
+    default: [],
+    type: 'enum',
+    enum: genre,
+  })
+  genre: genre[];
 
   @Column({ nullable: false })
   themes: string;
 
   @Column({ nullable: false })
-  watchedCount: string;
+  watchedCount: number;
 
   @Column({ nullable: false })
-  fansCount: string;
+  fansCount: number;
 
   @Column({ nullable: false })
-  likesCount: string;
+  likesCount: number;
 
   @Column({ nullable: false })
-  reviewsCount: string;
+  reviewsCount: number;
 
   @Column({ nullable: false })
-  listsCount: string;
+  listsCount: number;
 
   @Column({ nullable: false })
   tagline: string;
