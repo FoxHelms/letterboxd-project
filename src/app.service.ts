@@ -60,11 +60,11 @@ export class AppService {
     const film = new Film();
     const filmGenres: genre[] = [];
     const collectedStats = {
-      members: '',
-      fans: '',
-      likes: '',
-      reviews: '',
-      lists: '',
+      members: 0,
+      fans: 0,
+      likes: 0,
+      reviews: 0,
+      lists: 0,
     };
     const resp = await fetch(`https://letterboxd.com/film/${filmName}/`);
     const ratingsResp = await fetch(
@@ -75,11 +75,13 @@ export class AppService {
     const parsedPage = parse(respBody);
     const parsedRatings = parse(ratingsRespBody);
 
-    const averageRating = parsedPage
+    const averageRatingString = parsedPage
       .querySelector('[name="twitter:data2"]')
       .getAttribute('content')
       .split(' ')
       .at(0);
+
+    const averageRating = parseInt(averageRatingString);
 
     const genreThemeString = parsedPage
       .getElementById('tab-genres')
@@ -122,7 +124,7 @@ export class AppService {
         .getAttribute('title')
         .replace(/[^0-9]/g, '');
 
-      collectedStats[category] = statCount;
+      collectedStats[category] = parseInt(statCount);
     });
 
     const filmWrapper = parsedPage.getElementById('film-page-wrapper');
@@ -137,7 +139,7 @@ export class AppService {
     const runtimeString = filmWrapper.querySelector(
       '[class="text-link text-footer"]',
     ).textContent;
-    const runtime = runtimeString.replace(/[^0-9]/g, '');
+    const runtime = parseInt(runtimeString.replace(/[^0-9]/g, ''));
 
     const tagline = reviewElement.querySelector('[class="tagline"]').textContent
       ? reviewElement.querySelector('[class="tagline"]').textContent
@@ -150,15 +152,15 @@ export class AppService {
     film.name = filmName;
     film.letterboxdId = letterboxdId;
     film.releaseYear = filmYear;
-    film.averageRating = parseInt(averageRating);
+    film.averageRating = averageRating;
     film.genre = filmGenres;
     film.themes = filmThemes;
-    film.watchedCount = parseInt(collectedStats['members']);
-    film.fansCount = parseInt(collectedStats['fans']);
-    film.likesCount = parseInt(collectedStats['likes']);
-    film.reviewsCount = parseInt(collectedStats['reviews']);
-    film.listsCount = parseInt(collectedStats['lists']);
-    film.runtime = parseInt(runtime);
+    film.watchedCount = collectedStats['members'];
+    film.fansCount = collectedStats['fans'];
+    film.likesCount = collectedStats['likes'];
+    film.reviewsCount = collectedStats['reviews'];
+    film.listsCount = collectedStats['lists'];
+    film.runtime = runtime;
     film.tagline = tagline;
     film.fullSummary = fullSummary;
 
