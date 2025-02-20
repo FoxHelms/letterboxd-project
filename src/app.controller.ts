@@ -15,8 +15,7 @@ export class AppController {
     return await this.appService.scrapeAllFilms(save);
   }
 
-  // TODO - not sure what to do with letterboxdId here
-  @Post('films/scrape/:name')
+  @Post('films/scrape/:name/:id')
   async scrapeFilmData(
     @Param('name') name: string,
     @Param('id') id: string,
