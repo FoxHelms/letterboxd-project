@@ -1,3 +1,5 @@
+!(Correlation Matrix of letterboxd variables, based on roughly 15,000 films.) [/assets/images/films_correlation_matrix.png]
+
 ## Running the project with Docker (Docker Desktop needs to be running)
 ```bash
 docker-compose up --build
@@ -8,11 +10,16 @@ While the server is running on docker, in a separate terminal:
 ```bash
 npm run docker:migration:generate
 ```
-
+```
+docker exec letterboxd-project-api-1 npm run typeorm:migration:run
+```
 ## Creating migrations
 While the server is running on docker, in a separate terminal:
 ```bash
 npm run docker:migration:generate ./migrations/<MIGRATION_NAME>
+```
+```
+docker exec letterboxd-project-api-1 npm run typeorm:migration:generate ./migrations/<MIGRATION_NAME>
 ```
 
 ## Installation
