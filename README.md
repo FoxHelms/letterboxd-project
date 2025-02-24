@@ -1,5 +1,5 @@
 ## Correlation Matrix
-![Correlation Matrix of letterboxd variables, based on roughly 15,000 films.] (assets/images/films_correlation_matrix.png)
+![Correlation Matrix of letterboxd variables, based on roughly 15,000 films.](assets/images/films_correlation_matrix.png)
 
 The correlation matrix will be used to guide development and training of a prediction model that will recommend movies to Letterboxd users based on their account activity. 
 
