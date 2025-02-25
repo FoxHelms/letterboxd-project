@@ -15,6 +15,14 @@ export class AppController {
     return await this.appService.scrapeAllFilms(save);
   }
 
+  @Post('films/scrape/:name/:id')
+  async scrapeFilmData(
+    @Param('name') name: string,
+    @Param('id') id: string,
+  ): Promise<Film> {
+    return await this.appService.scrapeFilmData(name, id);
+  }
+
   @Get('films/all')
   async getAllFilms(): Promise<Film[]> {
     return await this.appService.getAllFilms();
