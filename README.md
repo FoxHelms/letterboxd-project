@@ -3,6 +3,11 @@
 
 The correlation matrix will be used to guide development and training of a prediction model that will recommend movies to Letterboxd users based on their account activity. 
 
+## First Model Training - Loss Results
+![Loss function of model trained on roughly 1,500 films.](assets/images/first_training_loss_results.png)
+
+This first model was trained to predict whether or not a given user had seen a film or not. The weights can be found in the assets folder. 
+
 ## Running the project with Docker (Docker Desktop needs to be running)
 ```bash
 docker-compose up --build
