@@ -2,12 +2,14 @@ import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { Film } from './films/film.entity';
+import { FilmService } from './films/film.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly userService: UserService,
+    private readonly filmService: FilmService,
   ) {}
 
   @Post('films/scrape')
@@ -20,7 +22,7 @@ export class AppController {
     @Param('name') name: string,
     @Param('id') id: string,
   ): Promise<Film> {
-    return await this.appService.scrapeFilmData(name, id);
+    return await this.filmService.scrapeFilmData(name, id);
   }
 
   @Get('films/all')
