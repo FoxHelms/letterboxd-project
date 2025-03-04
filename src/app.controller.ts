@@ -13,8 +13,8 @@ export class AppController {
   ) {}
 
   @Post('films/scrape')
-  async scrapeAllFilms(@Query('save') save?: boolean): Promise<Film[]> {
-    return await this.appService.scrapeAllFilms(save);
+  async scrapeAllFilms(): Promise<Film[]> {
+    return await this.appService.scrapeAllFilms();
   }
 
   @Post('films/scrape/:name/:id')

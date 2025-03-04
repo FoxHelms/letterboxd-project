@@ -39,7 +39,7 @@ export class UserService {
   }
 
   // Note that this overwrites a user's films in the DB
-  async scrapeUserFilms(user: User) {
+  async scrapeUserFilms(user: User): Promise<void> {
     const filmsUrl = `https://letterboxd.com/${user.username}/films`;
     const filmsResp = await fetch(filmsUrl);
     const maxPage = this.getMaxPage(parse(await filmsResp.text()));
@@ -81,7 +81,7 @@ export class UserService {
     }
   }
 
-  async scrapeUserReviews(user: User) {
+  async scrapeUserReviews(user: User): Promise<void> {
     const reviewsUrl = `https://letterboxd.com/${user.username}/reviews`;
     const reviewsResp = await fetch(reviewsUrl);
     const maxPage = this.getMaxPage(parse(await reviewsResp.text()));

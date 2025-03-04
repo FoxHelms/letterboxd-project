@@ -11,7 +11,10 @@ export class ReviewService {
     private reviewRepository: Repository<Review>,
   ) {}
 
-  private extractReviewData(root: HTMLElement) {
+  private extractReviewData(root: HTMLElement): {
+    reviewBody: string;
+    rating: string;
+  } {
     const jsonScriptTag = root.querySelector(
       'script[type="application/ld+json"]',
     );
@@ -38,7 +41,7 @@ export class ReviewService {
   }
 
   // Note: this does not save the review
-  async scrapeReview(reviewUrl: string) {
+  async scrapeReview(reviewUrl: string): Promise<Review> {
     const resp = await fetch(`https://letterboxd.com${reviewUrl}`);
     const parsedBody = parse(await resp.text());
     const { reviewBody, rating } = this.extractReviewData(parsedBody);
@@ -54,8 +57,10 @@ export class ReviewService {
   }
 
   async saveMany(reviews: Review[]) {
-    return this.reviewRepository.manager.transaction(async (transactionalEntityManager) => {
-      return await transactionalEntityManager.save(Review, reviews);
-    });
+    return this.reviewRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        return await transactionalEntityManager.save(Review, reviews);
+      },
+    );
   }
 }

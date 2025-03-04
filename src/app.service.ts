@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { parse, HTMLElement } from 'node-html-parser';
-import { Film, genre } from './films/film.entity';
+import { Film } from './films/film.entity';
 import { FilmService } from './films/film.service';
 
 @Injectable()
 export class AppService {
   constructor(private readonly filmService: FilmService) {}
 
-  async scrapeAllFilms(save: boolean = false): Promise<Film[]> {
+  async scrapeAllFilms(): Promise<Film[]> {
     const resp = await fetch(
       'https://letterboxd.com/hershwin/list/all-the-movies/',
     );
@@ -24,33 +24,25 @@ export class AppService {
       const filmsList = parsedPage.querySelectorAll(
         '[class="poster-container numbered-list-item"]',
       );
+      const promiseArray = [];
       // console.log('film list item: ', filmsList.at(1));
       // console.log('film list item inner html: ', filmsList.at(1).innerHTML);
 
       filmsList.forEach((film) => {
-        const newFilm = new Film();
-        newFilm.name = film
+        const name = film
           .getElementsByTagName('div')
           .at(0)
           .getAttribute('data-film-slug');
-        newFilm.letterboxdId = film
+        const letterboxdId = film
           .getElementsByTagName('div')
           .at(0)
           .getAttribute('data-film-id');
 
-        filmArray.push(newFilm);
+        const promise = this.filmService.scrapeFilmData(name, letterboxdId);
+        promiseArray.push(promise);
       });
-    }
 
-    if (save) {
-      const filmPromises = new Array<Promise<Film>>();
-      for (const film of filmArray) {
-        filmPromises.push(
-          this.filmService.saveFilm(film.name, film.letterboxdId),
-        );
-      }
-      const res = await Promise.all(filmPromises);
-      console.log(res);
+      filmArray.push(...(await Promise.all(promiseArray)));
     }
 
     return filmArray;

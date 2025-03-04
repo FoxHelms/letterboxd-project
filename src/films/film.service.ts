@@ -26,11 +26,11 @@ export class FilmService {
     return this.filmRepository.findOne({ where: { name } });
   }
 
-  getAllFilms() {
+  getAllFilms(): Promise<Film[]> {
     return this.filmRepository.find();
   }
 
-  async scrapeFilmData(filmName: string, letterboxdId: string) {
+  async scrapeFilmData(filmName: string, letterboxdId: string): Promise<Film> {
     const film = new Film();
     const filmGenres: genre[] = [];
     const collectedStats = {
