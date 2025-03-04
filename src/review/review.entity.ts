@@ -26,6 +26,9 @@ export class Review {
   @Column({ nullable: false })
   liked: boolean;
 
+  @Column({ nullable: true })
+  content: string;
+
   @ManyToOne(() => User, (user) => user.reviews)
   user: User;
 

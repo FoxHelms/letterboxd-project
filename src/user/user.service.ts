@@ -4,6 +4,7 @@ import { FilmService } from 'src/films/film.service';
 import { Repository } from 'typeorm';
 import { parse, HTMLElement } from 'node-html-parser';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ReviewService } from 'src/review/review.service';
 
 @Injectable()
 export class UserService {
@@ -11,6 +12,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly filmService: FilmService,
+    private readonly reviewService: ReviewService,
   ) {}
   getUser(username: string): Promise<User> {
     return this.userRepository.findOne({ where: { username } });
@@ -31,6 +33,7 @@ export class UserService {
     const user = await this.getOrCreateUser(username);
 
     await this.scrapeUserFilms(user);
+    await this.scrapeUserReviews(user);
 
     return user;
   }
@@ -76,6 +79,42 @@ export class UserService {
       userWithFilms.films = Promise.resolve(films);
       await this.userRepository.save(userWithFilms);
     }
+  }
+
+  async scrapeUserReviews(user: User) {
+    const reviewsUrl = `https://letterboxd.com/${user.username}/reviews`;
+    const reviewsResp = await fetch(reviewsUrl);
+    const maxPage = this.getMaxPage(parse(await reviewsResp.text()));
+
+    // Collect all reviews first
+    const reviewsToSave = [];
+    for (let j = 1; j <= maxPage; j++) {
+      console.log(`Scraping page ${j}/${maxPage}`);
+      const resp = await fetch(`${reviewsUrl}/page/${j}/`);
+      const parsedBody = parse(await resp.text());
+      const reviewUrls = parsedBody
+        .querySelectorAll(
+          '.film-detail-content .headline-2.prettify a:first-child',
+        )
+        .map((el) => el.getAttribute('href'));
+
+      // url of format '/{username}/film/{filmname}/'
+      for (const url of reviewUrls) {
+        const review = await this.reviewService.scrapeReview(url);
+        review.user = user;
+
+        const filmName = url.split('/')[2];
+        const film = await this.filmService.getFilmByName(filmName);
+        if (film) {
+          review.film = film;
+        }
+
+        reviewsToSave.push(review);
+      }
+    }
+
+    // Save all reviews in a single transaction
+    await this.reviewService.saveMany(reviewsToSave);
   }
 
   private getMaxPage(parsedHtml: HTMLElement): number {

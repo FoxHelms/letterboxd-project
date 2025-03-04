@@ -22,6 +22,10 @@ export class FilmService {
     return this.filmRepository.findOne({ where: { letterboxdId } });
   }
 
+  getFilmByName(name: string): Promise<Film> {
+    return this.filmRepository.findOne({ where: { name } });
+  }
+
   getAllFilms() {
     return this.filmRepository.find();
   }
@@ -42,7 +46,7 @@ export class FilmService {
     );
     const respBody = await resp.text();
     const ratingsRespBody = await ratingsResp.text();
-    const parsedPage = parse (respBody);
+    const parsedPage = parse(respBody);
     const parsedRatings = parse(ratingsRespBody);
 
     const averageRatingString = parsedPage
