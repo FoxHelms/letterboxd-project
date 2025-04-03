@@ -53,7 +53,7 @@ export class Film {
   @Column({ nullable: false })
   releaseYear: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'float', default: 0 })
   averageRating: number;
 
   @Column({ nullable: false })

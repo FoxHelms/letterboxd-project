@@ -1,18 +1,20 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { Film } from './films/film.entity';
+import { FilmService } from './films/film.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly userService: UserService,
+    private readonly filmService: FilmService,
   ) {}
 
   @Post('films/scrape')
-  async scrapeAllFilms(@Query('save') save?: boolean): Promise<Film[]> {
-    return await this.appService.scrapeAllFilms(save);
+  async scrapeAllFilms(): Promise<Film[]> {
+    return await this.appService.scrapeAllFilms();
   }
 
   @Post('films/scrape/:name/:id')
@@ -20,7 +22,7 @@ export class AppController {
     @Param('name') name: string,
     @Param('id') id: string,
   ): Promise<Film> {
-    return await this.appService.scrapeFilmData(name, id);
+    return await this.filmService.scrapeFilmData(name, id);
   }
 
   @Get('films/all')

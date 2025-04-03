@@ -4,6 +4,10 @@ export class MoreFilmFields1740427845912 implements MigrationInterface {
     name = 'MoreFilmFields1740427845912'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        // First create the enum type
+        await queryRunner.query(`CREATE TYPE "public"."film_genre_enum" AS ENUM('Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'History', 'Horror', 'Music', 'Mystery', 'Romance', 'ScienceFiction', 'Thriller', 'TVMovie', 'War', 'Western', 'Unknown')`);
+
+        // Then add all the columns
         await queryRunner.query(`ALTER TABLE "film" ADD "releaseYear" character varying NOT NULL`);
         await queryRunner.query(`ALTER TABLE "film" ADD "averageRating" double precision NOT NULL DEFAULT '0'`);
         await queryRunner.query(`ALTER TABLE "film" ADD "runtime" integer NOT NULL`);
@@ -31,6 +35,8 @@ export class MoreFilmFields1740427845912 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "film" DROP COLUMN "runtime"`);
         await queryRunner.query(`ALTER TABLE "film" DROP COLUMN "averageRating"`);
         await queryRunner.query(`ALTER TABLE "film" DROP COLUMN "releaseYear"`);
+        
+        // Drop the enum type last
+        await queryRunner.query(`DROP TYPE "public"."film_genre_enum"`);
     }
-
 }

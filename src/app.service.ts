@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { parse, HTMLElement } from 'node-html-parser';
-import { Film, genre } from './films/film.entity';
+import { Film } from './films/film.entity';
 import { FilmService } from './films/film.service';
 
 @Injectable()
 export class AppService {
   constructor(private readonly filmService: FilmService) {}
 
-  async scrapeAllFilms(save: boolean = false): Promise<Film[]> {
+  async scrapeAllFilms(): Promise<Film[]> {
     const resp = await fetch(
       'https://letterboxd.com/hershwin/list/all-the-movies/',
     );
@@ -24,148 +24,29 @@ export class AppService {
       const filmsList = parsedPage.querySelectorAll(
         '[class="poster-container numbered-list-item"]',
       );
+      const promiseArray = [];
       // console.log('film list item: ', filmsList.at(1));
       // console.log('film list item inner html: ', filmsList.at(1).innerHTML);
 
-      filmsList.forEach((film) => {
-        const newFilm = new Film();
-        newFilm.name = film
+      for (const film of filmsList) {
+        const name = film
           .getElementsByTagName('div')
           .at(0)
           .getAttribute('data-film-slug');
-        newFilm.letterboxdId = film
+        const letterboxdId = film
           .getElementsByTagName('div')
           .at(0)
           .getAttribute('data-film-id');
 
-        filmArray.push(newFilm);
-      });
-    }
-
-    if (save) {
-      const filmPromises = new Array<Promise<Film>>();
-      for (const film of filmArray) {
-        filmPromises.push(
-          this.filmService.saveFilm(film.name, film.letterboxdId),
+        const scraped = await this.filmService.scrapeFilmData(
+          name,
+          letterboxdId,
         );
+        filmArray.push(scraped);
       }
-      const res = await Promise.all(filmPromises);
-      console.log(res);
     }
 
     return filmArray;
-  }
-
-  async scrapeFilmData(filmName: string, letterboxdId: string) {
-    const film = new Film();
-    const filmGenres: genre[] = [];
-    const collectedStats = {
-      members: 0,
-      fans: 0,
-      likes: 0,
-      reviews: 0,
-      lists: 0,
-    };
-    const resp = await fetch(`https://letterboxd.com/film/${filmName}/`);
-    const ratingsResp = await fetch(
-      `https://letterboxd.com/film/${filmName}/ratings`,
-    );
-    const respBody = await resp.text();
-    const ratingsRespBody = await ratingsResp.text();
-    const parsedPage = parse(respBody);
-    const parsedRatings = parse(ratingsRespBody);
-
-    const averageRatingString = parsedPage
-      .querySelector('[name="twitter:data2"]')
-      .getAttribute('content')
-      .split(' ')
-      .at(0);
-
-    const averageRating = parseInt(averageRatingString);
-
-    const genreThemeString = parsedPage
-      .getElementById('tab-genres')
-      .textContent.replace(/[^a-zA-Z ]/g, '');
-
-    let tempGenreStr = genreThemeString.match('Genre(.*) Themes').at(1);
-    const tempThemesStr = genreThemeString.match('Themes(.*) Show All');
-
-    const filmGenresStringArray = [];
-
-    if (tempGenreStr.includes('Science Fiction')) {
-      filmGenresStringArray.push('ScienceFiction');
-      tempGenreStr = tempGenreStr.replace('Science Fiction', '');
-    }
-
-    if (tempGenreStr.includes('TV Movie')) {
-      filmGenresStringArray.push('TVMovie');
-      tempGenreStr = tempGenreStr.replace('TV Movie', '');
-    }
-
-    tempGenreStr.includes(' ')
-      ? filmGenresStringArray.push(...tempGenreStr.substring(1).split(' '))
-      : filmGenresStringArray.push(tempGenreStr);
-
-    filmGenresStringArray.forEach((filmGenresString) => {
-      if (filmGenresString) {
-        Object.values(genre).includes(filmGenresString as genre)
-          ? filmGenres.push(genre[filmGenresString])
-          : filmGenres.push(genre.Unknown);
-      }
-    });
-
-    const filmThemes = tempThemesStr.at(1);
-
-    Object.keys(collectedStats).forEach((category) => {
-      const statElement = parsedRatings.querySelector(
-        `[href="/film/${filmName}/${category}/"]`,
-      );
-      const statCount = statElement
-        .getAttribute('title')
-        .replace(/[^0-9]/g, '');
-
-      collectedStats[category] = parseInt(statCount);
-    });
-
-    const filmWrapper = parsedPage.getElementById('film-page-wrapper');
-    const reviewElement = filmWrapper.querySelector(
-      '[class="review body-text -prose -hero prettify"]',
-    );
-
-    const filmYear = filmWrapper.querySelector(
-      '[class="releaseyear"]',
-    ).textContent;
-
-    const runtimeString = filmWrapper.querySelector(
-      '[class="text-link text-footer"]',
-    ).textContent;
-    const runtime = parseInt(runtimeString.replace(/[^0-9]/g, ''));
-
-    const tagline = reviewElement.querySelector('[class="tagline"]').textContent
-      ? reviewElement.querySelector('[class="tagline"]').textContent
-      : filmWrapper.querySelector('[class="tagline"]').textContent;
-
-    const fullSummary = reviewElement
-      .getElementsByTagName('p')
-      .at(0).textContent;
-
-    film.name = filmName;
-    film.letterboxdId = letterboxdId;
-    film.releaseYear = filmYear;
-    film.averageRating = averageRating;
-    film.genre = filmGenres;
-    film.themes = filmThemes;
-    film.watchedCount = collectedStats['members'];
-    film.fansCount = collectedStats['fans'];
-    film.likesCount = collectedStats['likes'];
-    film.reviewsCount = collectedStats['reviews'];
-    film.listsCount = collectedStats['lists'];
-    film.runtime = runtime;
-    film.tagline = tagline;
-    film.fullSummary = fullSummary;
-
-    console.log('new film obj', film);
-    return film;
   }
 
   private getMaxPage(parsedHtml: HTMLElement): number {
