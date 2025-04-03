@@ -63,8 +63,12 @@ export class FilmService {
         .getElementById('tab-genres')
         .textContent.replace(/[^a-zA-Z ]/g, '');
 
-      let tempGenreStr = genreThemeString.match('Genre(.*) Themes').at(1);
-      const tempThemesStr = genreThemeString.match('Themes(.*) Show All');
+      let tempGenreStr;
+      if (genreThemeString.includes('Themes')) {
+        tempGenreStr = genreThemeString.match('Genre(.*) Themes').at(1);
+      } else {
+        tempGenreStr = genreThemeString.match('Genre(.*)').at(1);
+      }
 
       const filmGenresStringArray = [];
 
@@ -77,10 +81,12 @@ export class FilmService {
         filmGenresStringArray.push('TVMovie');
         tempGenreStr = tempGenreStr.replace('TV Movie', '');
       }
+      tempGenreStr = tempGenreStr.trim()
 
       tempGenreStr.includes(' ')
         ? filmGenresStringArray.push(...tempGenreStr.substring(1).split(' '))
         : filmGenresStringArray.push(tempGenreStr);
+      
 
       filmGenresStringArray.forEach((filmGenresString) => {
         if (filmGenresString) {
@@ -90,7 +96,8 @@ export class FilmService {
         }
       });
 
-      const filmThemes = tempThemesStr.at(1);
+      const tempThemesStr = genreThemeString.match('Themes(.*) Show All');
+      const filmThemes = tempThemesStr ? tempThemesStr.at(1) : '';
 
       Object.keys(collectedStats).forEach((category) => {
         const statElement = parsedRatings.querySelector(
