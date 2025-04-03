@@ -38,7 +38,10 @@ export class AppService {
           .at(0)
           .getAttribute('data-film-id');
 
-        const scraped = await this.filmService.scrapeFilmData(name, letterboxdId);
+        const scraped = await this.filmService.scrapeFilmData(
+          name,
+          letterboxdId,
+        );
         filmArray.push(scraped);
       }
     }

@@ -62,7 +62,7 @@ export class FilmService {
       const genreThemeString = parsedPage
         .getElementById('tab-genres')
         .textContent.replace(/[^a-zA-Z ]/g, '');
-      
+
       let tempGenreStr = genreThemeString.match('Genre(.*) Themes').at(1);
       const tempThemesStr = genreThemeString.match('Themes(.*) Show All');
 
@@ -119,7 +119,7 @@ export class FilmService {
 
       const tagline = reviewElement.querySelector('[class="tagline"]')
         ? reviewElement.querySelector('[class="tagline"]').textContent
-        : "No tagline found.";
+        : 'No tagline found.';
 
       const fullSummary = reviewElement
         .getElementsByTagName('p')
@@ -139,7 +139,7 @@ export class FilmService {
       film.runtime = runtime;
       film.tagline = tagline;
       film.fullSummary = fullSummary;
-  
+
       console.log('Saving new film: ', film.name);
       return await this.filmRepository.save(film);
     } catch (error) {
