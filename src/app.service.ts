@@ -28,7 +28,7 @@ export class AppService {
       // console.log('film list item: ', filmsList.at(1));
       // console.log('film list item inner html: ', filmsList.at(1).innerHTML);
 
-      filmsList.forEach((film) => {
+      for (const film of filmsList) {
         const name = film
           .getElementsByTagName('div')
           .at(0)
@@ -38,11 +38,9 @@ export class AppService {
           .at(0)
           .getAttribute('data-film-id');
 
-        const promise = this.filmService.scrapeFilmData(name, letterboxdId);
-        promiseArray.push(promise);
-      });
-
-      filmArray.push(...(await Promise.all(promiseArray)));
+        const scraped = await this.filmService.scrapeFilmData(name, letterboxdId);
+        filmArray.push(scraped);
+      }
     }
 
     return filmArray;
